@@ -1,577 +1,94 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postal Exam System - แยกส่วนการทำงาน</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        .active-admin-nav { background: rgba(255, 255, 255, 0.1); color: white; border-left: 4px solid #dc2626; }
-        
-        .page-transition { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Postal Exam System</title>
 
-        /* Cart Animation */
-        .cart-fly {
-            position: fixed; z-index: 9999; pointer-events: none;
-            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: #dc2626; color: white; padding: 10px; border-radius: 50%;
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+body { font-family: sans-serif; }
+.page-transition { animation: fade .3s ease; }
+@keyframes fade { from{opacity:0} to{opacity:1} }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900">
 
-    <!-- Global Controls -->
-    <div class="fixed bottom-6 right-6 z-[100] flex gap-2">
-        <button onclick="switchView('user')" class="bg-slate-900 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-bold border border-white/20 hover:scale-105 transition-all">
-            <i class="fas fa-eye mr-1"></i> หน้าบ้าน
-        </button>
-        <button onclick="switchView('admin')" class="bg-red-600 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-bold border border-white/20 hover:scale-105 transition-all">
-            <i class="fas fa-tools mr-1"></i> หลังบ้าน (Admin)
-        </button>
-    </div>
+<body class="bg-slate-50">
 
-    <!-- ==========================================
-         USER INTERFACE (หน้าบ้าน)
-    =========================================== -->
-    <div id="user-system" class="min-h-screen flex flex-col">
-        <!-- User Navbar -->
-        <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="navigateUser('home')">
-                <div class="bg-red-600 p-1.5 rounded-lg text-white"><i class="fas fa-paper-plane"></i></div>
-                <span class="font-black text-xl tracking-tighter uppercase">Postal<span class="text-red-600">Exam</span></span>
-            </div>
-            <div class="hidden md:flex gap-8 font-bold text-sm text-slate-600">
-                <button onclick="navigateUser('home')" class="u-nav hover:text-red-600">หน้าแรก</button>
-                <button onclick="navigateUser('stats')" class="u-nav hover:text-red-600">ข้อมูลสมัคร</button>
-                <button onclick="navigateUser('exam')" class="u-nav hover:text-red-600">สอบจำลอง</button>
-                <button onclick="navigateUser('shop')" class="u-nav hover:text-red-600">คลังหนังสือ</button>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="relative cursor-pointer" id="cart-btn">
-                    <i class="fas fa-shopping-cart text-slate-400 text-xl"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
-                </div>
-                <button class="bg-slate-900 text-white px-5 py-2 rounded-xl text-xs font-bold">เข้าสู่ระบบ</button>
-            </div>
-        </nav>
+<!-- FLOAT BTN -->
+<div class="fixed bottom-5 right-5 z-50 flex gap-2">
+<button onclick="switchView('user')" class="bg-black text-white px-4 py-2 rounded">User</button>
+<button onclick="switchView('admin')" class="bg-red-600 text-white px-4 py-2 rounded">Admin</button>
+</div>
 
-        <!-- User Pages Container -->
-        <main id="user-content" class="flex-1">
-            
-            <!-- Page: Home -->
-            <section id="u-page-home" class="user-page page-transition p-10 max-w-7xl mx-auto">
-                <div class="bg-slate-900 rounded-[40px] p-16 text-white flex flex-col md:flex-row items-center gap-10">
-                    <div class="flex-1">
-                        <h1 class="text-5xl font-black mb-6 leading-tight">ติวสอบเข้า <br><span class="text-red-500">ไปรษณีย์ไทย 2569</span></h1>
-                        <p class="text-slate-400 mb-8 font-bold uppercase tracking-widest text-xs">ระบบคลังข้อสอบและจำลองการสอบที่ใหญ่ที่สุด</p>
-                        <button onclick="navigateUser('exam')" class="bg-red-600 px-10 py-5 rounded-2xl font-black shadow-lg shadow-red-600/30 hover:bg-red-700 transition-all active:scale-95">เริ่มทดลองสอบฟรี</button>
-                    </div>
-                    <div class="flex-1">
-                        <div class="bg-white/5 border border-white/10 p-12 rounded-[40px] backdrop-blur-sm text-center">
-                            <i class="fas fa-rocket text-6xl text-red-600 mb-4 animate-bounce"></i>
-                            <h3 class="text-xl font-bold">อัปเดตใหม่ 2569</h3>
-                            <p class="text-slate-400 text-sm mt-2">รวมข้อสอบย้อนหลัง 10 ปี ครบทุกวิชา</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+<!-- USER -->
+<div id="user-system">
 
-            <!-- Page: Admission Stats -->
-            <section id="u-page-stats" class="user-page hidden page-transition p-10 max-w-6xl mx-auto">
-                <div class="text-center mb-10">
-                    <h2 class="text-4xl font-black mb-2 uppercase">ข้อมูลสถิติ</h2>
-                    <p class="text-slate-400 font-bold uppercase tracking-tighter">สถิติการรับสมัครย้อนหลัง 2560 - 2569</p>
-                </div>
-                <div class="bg-white rounded-[32px] border shadow-sm overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 border-b text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                            <tr>
-                                <th class="p-6">ปีการศึกษา</th>
-                                <th class="p-6">จำนวนรับ (ชาย)</th>
-                                <th class="p-6">จำนวนรับ (หญิง)</th>
-                                <th class="p-6">รวมทั้งสิ้น</th>
-                                <th class="p-6">สถานะ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stats-table-body" class="divide-y text-sm font-bold text-slate-700">
-                            <!-- Data injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+<nav class="bg-white p-4 flex justify-between">
+<b>PostalExam</b>
+<div id="cart">🛒 <span id="cart-count">0</span></div>
+</nav>
 
-            <!-- Page: Exam Simulation -->
-            <section id="u-page-exam" class="user-page hidden page-transition p-10 max-w-4xl mx-auto">
-                <div id="exam-intro" class="bg-white border p-12 rounded-[40px] text-center shadow-sm">
-                    <div class="w-20 h-20 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl">
-                        <i class="fas fa-stopwatch"></i>
-                    </div>
-                    <h2 class="text-3xl font-black mb-4 uppercase">ข้อสอบจำลอง (Mini Mock Exam)</h2>
-                    <p class="text-slate-500 mb-8 font-bold">วิชาละ 3 ข้อ | รวม 9 ข้อ | เวลา 5:00 นาที</p>
-                    <button onclick="startExamAction()" class="bg-slate-900 text-white px-12 py-5 rounded-2xl font-black shadow-xl hover:scale-105 transition-all">เริ่มการสอบ</button>
-                </div>
+<div id="user-content" class="p-6"></div>
 
-                <div id="exam-process" class="hidden space-y-6">
-                    <div class="flex justify-between items-center bg-white p-6 rounded-3xl border sticky top-24 z-10 shadow-lg">
-                        <div class="flex items-center gap-4">
-                            <div id="timer-box" class="bg-red-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg">05:00</div>
-                            <div>
-                                <p class="text-[10px] font-black text-slate-400 uppercase">วิชา: <span id="current-subject-name" class="text-red-600">ภาษาไทย</span></p>
-                                <p class="font-black">ข้อที่ <span id="q-index-display">1</span> / 9</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="q-card" class="bg-white p-10 rounded-[40px] border shadow-sm min-h-[350px]">
-                        <!-- Question content -->
-                    </div>
-                </div>
+</div>
 
-                <div id="exam-summary" class="hidden bg-white border p-16 rounded-[40px] text-center shadow-sm">
-                    <h2 class="text-4xl font-black mb-4 uppercase">ประกาศผลสอบ</h2>
-                    <p class="text-slate-400 font-bold mb-6">คะแนนที่คุณทำได้</p>
-                    <div class="text-8xl font-black text-red-600 mb-10"><span id="final-score">0</span><span class="text-2xl text-slate-300">/ 9</span></div>
-                    <div class="flex flex-col gap-3 max-w-xs mx-auto">
-                        <button onclick="startExamAction()" class="bg-slate-900 text-white py-4 rounded-2xl font-black shadow-lg">ทำใหม่อีกครั้ง</button>
-                        <button onclick="navigateUser('home')" class="text-slate-400 font-bold hover:text-slate-900">กลับสู่หน้าแรก</button>
-                    </div>
-                </div>
-            </section>
+<!-- ADMIN -->
+<div id="admin-system" class="hidden p-10">
+<h1 class="text-2xl font-bold">Admin Panel</h1>
+<p>ระบบหลังบ้านใช้งานได้</p>
+</div>
 
-            <!-- Page: Shop -->
-            <section id="u-page-shop" class="user-page hidden page-transition p-10 max-w-7xl mx-auto">
-                <div class="flex justify-between items-center mb-10">
-                    <h2 class="text-3xl font-black uppercase">คลังหนังสือติวสอบ</h2>
-                    <div class="flex gap-2">
-                        <button class="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold">ทั้งหมด</button>
-                        <button class="px-4 py-2 bg-white border text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50">อีบุ๊ก</button>
-                        <button class="px-4 py-2 bg-white border text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50">คอร์สเรียน</button>
-                    </div>
-                </div>
-                <div id="shop-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                    <!-- Shop Items -->
-                </div>
-            </section>
-        </main>
-    </div>
+<script>
 
-    <!-- ==========================================
-         ADMIN INTERFACE (หลังบ้าน)
-    =========================================== -->
-    <div id="admin-system" class="hidden min-h-screen flex bg-slate-900 overflow-hidden">
-        <!-- Admin Sidebar -->
-        <aside class="w-72 flex flex-col shrink-0 border-r border-white/5">
-            <div class="p-8 flex items-center gap-3 text-white border-b border-white/5">
-                <div class="bg-red-600 p-2 rounded-xl"><i class="fas fa-shield-alt"></i></div>
-                <div>
-                    <p class="font-black text-xs uppercase leading-none">Admin Panel</p>
-                    <p class="text-[10px] text-white/40 font-bold mt-1 uppercase">v2.1 Stable</p>
-                </div>
-            </div>
-            <nav class="p-4 space-y-1 flex-1 overflow-y-auto custom-scroll">
-                <button onclick="navigateAdmin('dashboard')" id="a-nav-dashboard" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold active-admin-nav text-slate-400">
-                    <i class="fas fa-th-large"></i> แผงควบคุม
-                </button>
-                <button onclick="navigateAdmin('slips')" id="a-nav-slips" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold text-slate-400 hover:bg-white/5">
-                    <i class="fas fa-receipt"></i> ตรวจสอบสลิป <span class="ml-auto bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px]">3</span>
-                </button>
-                <button onclick="navigateAdmin('inventory')" id="a-nav-inventory" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold text-slate-400 hover:bg-white/5">
-                    <i class="fas fa-box"></i> จัดการสินค้า
-                </button>
-                <button onclick="navigateAdmin('banks')" id="a-nav-banks" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold text-slate-400 hover:bg-white/5">
-                    <i class="fas fa-university"></i> บัญชีธนาคาร
-                </button>
-                <button onclick="navigateAdmin('users')" id="a-nav-users" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold text-slate-400 hover:bg-white/5">
-                    <i class="fas fa-users-cog"></i> ผู้ใช้งาน
-                </button>
-                <button onclick="navigateAdmin('jobs')" id="a-nav-jobs" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold text-slate-400 hover:bg-white/5">
-                    <i class="fas fa-briefcase"></i> ตำแหน่งงาน
-                </button>
-                <button onclick="navigateAdmin('cms')" id="a-nav-cms" class="w-full flex items-center gap-3 p-4 rounded-2xl transition-all text-sm font-bold text-slate-400 hover:bg-white/5 border-t border-white/5 pt-4 mt-4">
-                    <i class="fas fa-edit"></i> จัดการเนื้อหาเว็บ
-                </button>
-            </nav>
-        </aside>
+// DATA
+const products = [
+ {name:"หนังสือสอบ", price:450},
+ {name:"คอร์ส", price:1500}
+];
 
-        <!-- Admin Main Content -->
-        <main class="flex-1 flex flex-col bg-slate-50">
-            <header class="bg-white border-b px-10 py-5 flex justify-between items-center shadow-sm">
-                <h2 id="admin-page-title" class="text-xl font-black">Dashboard</h2>
-                <div class="flex items-center gap-4">
-                    <div class="text-right">
-                        <p class="text-xs font-bold">Admin User</p>
-                        <p class="text-[10px] text-red-600 font-bold uppercase tracking-widest">Active Now</p>
-                    </div>
-                    <div class="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center text-white"><i class="fas fa-user-tie"></i></div>
-                </div>
-            </header>
+// SWITCH
+function switchView(v){
+ document.getElementById('user-system').classList.toggle('hidden', v!=='user');
+ document.getElementById('admin-system').classList.toggle('hidden', v!=='admin');
+}
 
-            <div id="admin-content-area" class="flex-1 p-10 overflow-y-auto custom-scroll">
-                
-                <!-- Admin: Dashboard -->
-                <section id="a-page-dashboard" class="admin-page space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">ยอดขาย (เดือนนี้)</p>
-                            <h3 class="text-3xl font-black">฿42,500</h3>
-                        </div>
-                        <div class="bg-red-600 p-8 rounded-3xl shadow-xl text-white">
-                            <p class="text-[10px] font-black text-white/60 uppercase mb-2">สมัครสอบใหม่</p>
-                            <h3 class="text-3xl font-black">218 คน</h3>
-                        </div>
-                        <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">รอเช็คสลิป</p>
-                            <h3 class="text-3xl font-black text-orange-500">3 ใบ</h3>
-                        </div>
-                        <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">สินค้าหมด</p>
-                            <h3 class="text-3xl font-black text-slate-300">0</h3>
-                        </div>
-                    </div>
-                </section>
+// RENDER HOME
+function renderHome(){
+ document.getElementById('user-content').innerHTML = `
+ <h1 class="text-3xl font-bold mb-4">หน้าแรก</h1>
+ <button onclick="renderShop()" class="bg-red-600 text-white px-4 py-2 rounded">ไป Shop</button>
+ `;
+}
 
-                <!-- Admin: Slips Mockup -->
-                <section id="a-page-slips" class="admin-page hidden space-y-6">
-                    <div class="bg-white rounded-3xl border overflow-hidden">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                <tr>
-                                    <th class="p-6">Transaction</th>
-                                    <th class="p-6">User</th>
-                                    <th class="p-6">Amount</th>
-                                    <th class="p-6">Status</th>
-                                    <th class="p-6">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y text-xs font-bold">
-                                <tr>
-                                    <td class="p-6">#TX-1045</td>
-                                    <td class="p-6">ธนพล สุขใจ</td>
-                                    <td class="p-6">฿350.00</td>
-                                    <td class="p-6"><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full uppercase">Pending</span></td>
-                                    <td class="p-6 flex gap-2">
-                                        <button class="bg-green-600 text-white px-3 py-1.5 rounded-xl hover:opacity-80 transition-opacity">Approve</button>
-                                        <button class="bg-slate-100 text-slate-400 px-3 py-1.5 rounded-xl">View</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="p-6">#TX-1044</td>
-                                    <td class="p-6">สายใจ ยิ้มแย้ม</td>
-                                    <td class="p-6">฿1,200.00</td>
-                                    <td class="p-6"><span class="bg-green-100 text-green-600 px-3 py-1 rounded-full uppercase">Verified</span></td>
-                                    <td class="p-6"><i class="fas fa-check-circle text-green-500 text-lg"></i></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+// SHOP
+let cart=0;
+function renderShop(){
+ document.getElementById('user-content').innerHTML = `
+ <h1 class="text-3xl mb-4">Shop</h1>
+ ${products.map((p,i)=>`
+   <div class="bg-white p-4 mb-2 flex justify-between">
+    ${p.name} - ฿${p.price}
+    <button onclick="addCart()" class="bg-black text-white px-3">+</button>
+   </div>
+ `).join("")}
+ `;
+}
 
-                <!-- Admin: Inventory Mockup -->
-                <section id="a-page-inventory" class="admin-page hidden space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-black">รายการหนังสือ (7 รายการ)</h4>
-                        <button class="bg-slate-900 text-white px-6 py-2 rounded-xl text-xs font-bold">เพิ่มหนังสือ</button>
-                    </div>
-                    <div id="admin-book-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Book items -->
-                    </div>
-                </section>
+// CART
+function addCart(){
+ cart++;
+ document.getElementById('cart-count').innerText = cart;
+}
 
-                <!-- Admin: Banks Mockup -->
-                <section id="a-page-banks" class="admin-page hidden space-y-6">
-                    <div class="bg-white p-10 rounded-[32px] border">
-                        <h4 class="font-black mb-6">ตั้งค่าบัญชีรับเงิน</h4>
-                        <div class="space-y-4">
-                            <div class="p-6 border-2 border-slate-100 rounded-3xl flex justify-between items-center">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-white font-black">K</div>
-                                    <div>
-                                        <p class="font-bold">กสิกรไทย (K-Bank)</p>
-                                        <p class="text-xs text-slate-400">012-3-45678-9</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-toggle-on text-2xl text-green-500"></i>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+// INIT (สำคัญมาก)
+document.addEventListener("DOMContentLoaded", ()=>{
+ renderHome();
+});
 
-                <!-- Admin: Users Mockup -->
-                <section id="a-page-users" class="admin-page hidden space-y-6">
-                    <div class="bg-white rounded-[32px] border p-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <h4 class="font-black">ระบบสมาชิก (1,450 คน)</h4>
-                            <input type="text" placeholder="ค้นหาชื่อหรืออีเมล..." class="bg-slate-50 border rounded-xl px-4 py-2 text-sm">
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-slate-200 rounded-full"></div>
-                                    <div>
-                                        <p class="font-bold text-sm">อภิชาติ ประกาย</p>
-                                        <p class="text-[10px] text-slate-400 font-bold uppercase">Member</p>
-                                    </div>
-                                </div>
-                                <button class="text-red-500 text-sm"><i class="fas fa-ban"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+</script>
 
-                <!-- Admin: Jobs Mockup -->
-                <section id="a-page-jobs" class="admin-page hidden space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-3xl border">
-                            <h5 class="font-black text-sm mb-4">ครูสอนพาร์ทไทม์ (Math)</h5>
-                            <p class="text-xs text-slate-400 mb-4">รับสมัครติวเตอร์วิชาคณิตศาสตร์ สำหรับน้องๆ ไปรษณีย์</p>
-                            <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">เปิดรับอยู่</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Admin: CMS Mockup -->
-                <section id="a-page-cms" class="admin-page hidden space-y-6">
-                    <div class="bg-white p-10 rounded-[40px] border shadow-sm space-y-8">
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">ข้อความพาดหัวหลัก</label>
-                            <input type="text" value="ติวสอบเข้า ไปรษณีย์ไทย 2569" class="w-full bg-slate-50 border p-4 rounded-2xl font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">รายละเอียดแบนเนอร์</label>
-                            <textarea class="w-full bg-slate-50 border p-4 rounded-2xl font-bold h-32">ระบบคลังข้อสอบและจำลองการสอบที่ใหญ่ที่สุด</textarea>
-                        </div>
-                        <button class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg">บันทึกข้อมูลหน้าเว็บ</button>
-                    </div>
-                </section>
-
-            </div>
-        </main>
-    </div>
-
-    <script>
-        // --- DATA OBJECTS ---
-        const statsData = [
-            { year: 2569, m: 120, f: 80, status: 'Active' },
-            { year: 2568, m: 110, f: 75, status: 'Closed' },
-            { year: 2567, m: 100, f: 65, status: 'Closed' },
-            { year: 2566, m: 130, f: 85, status: 'Closed' },
-            { year: 2565, m: 95, f: 60, status: 'Closed' },
-        ];
-
-        const products = [
-            { id: 1, name: 'คลังข้อสอบไปรษณีย์ 2569', price: 450, category: 'Book', tag: 'Bestseller' },
-            { id: 2, name: 'สรุปไทยเข้มข้น (Short Note)', price: 190, category: 'E-Book', tag: 'Hot' },
-            { id: 3, name: 'ติวสดออนไลน์ (Live Course)', price: 1500, category: 'Course', tag: 'Online' },
-            { id: 4, name: 'ตะลุยโจทย์อังกฤษ 500 ข้อ', price: 290, category: 'Book', tag: 'New' },
-        ];
-
-        const examPool = [
-            { subject: 'ภาษาไทย', q: 'ข้อใดคือจุดประสงค์ของการใช้ "ราชาศัพท์"?', opts: ['เพื่อความไพเราะ', 'เพื่อแสดงลำดับชั้นทางสังคม', 'เพื่อการประหยัดถ้อยคำ', 'เพื่อให้ดูเป็นทางการ'], ans: 1 },
-            { subject: 'ภาษาไทย', q: 'คำว่า "ละไม" มีความหมายตรงกับข้อใด?', opts: ['อ่อนหวาน', 'นุ่มนวล', 'ละเอียด', 'ถูกทุกข้อ'], ans: 3 },
-            { subject: 'ภาษาไทย', q: 'สุภาษิตใดหมายถึงการพึ่งพาอาศัยกัน?', opts: ['น้ำพึ่งเรือเสือพึ่งป่า', 'ไก่งามเพราะขน', 'จับปลาสองมือ', 'เข็นครกขึ้นภูเขา'], ans: 0 },
-            { subject: 'คณิตศาสตร์', q: 'ค่าของ 25 + (15 x 2) คือเท่าใด?', opts: ['80', '55', '45', '65'], ans: 1 },
-            { subject: 'คณิตศาสตร์', q: 'พนักงานมีเงินเดือน 15,000 บาท ได้โบนัส 10% จะได้เงินกี่บาท?', opts: ['16,000', '16,500', '17,000', '15,500'], ans: 1 },
-            { subject: 'คณิตศาสตร์', q: '12 เป็นกี่เปอร์เซ็นต์ของ 60?', opts: ['10%', '20%', '25%', '30%'], ans: 1 },
-            { subject: 'ภาษาอังกฤษ', q: 'I ______ to the cinema last night.', opts: ['go', 'goes', 'went', 'gone'], ans: 2 },
-            { subject: 'ภาษาอังกฤษ', q: 'Which one is a "Fruit"?', opts: ['Cabbage', 'Carrot', 'Apple', 'Onion'], ans: 2 },
-            { subject: 'ภาษาอังกฤษ', q: 'What is the opposite of "Safe"?', opts: ['Secure', 'Dangerous', 'Quiet', 'Strong'], ans: 1 },
-        ];
-
-        // --- GLOBAL NAV ---
-        function switchView(view) {
-            document.getElementById('user-system').classList.toggle('hidden', view !== 'user');
-            document.getElementById('admin-system').classList.toggle('hidden', view !== 'admin');
-            if(view === 'admin') navigateAdmin('dashboard');
-        }
-
-        // --- USER NAV & PAGES ---
-        function navigateUser(pageId) {
-            document.querySelectorAll('.user-page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`u-page-${pageId}`).classList.remove('hidden');
-            
-            if(pageId === 'stats') renderStats();
-            if(pageId === 'shop') renderShop();
-            if(pageId === 'exam') resetExamView();
-            window.scrollTo(0, 0);
-        }
-
-        function renderStats() {
-            const tbody = document.getElementById('stats-table-body');
-            tbody.innerHTML = statsData.map(d => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-6">${d.year}</td>
-                    <td class="p-6 text-blue-600">${d.m} คน</td>
-                    <td class="p-6 text-pink-500">${d.f} คน</td>
-                    <td class="p-6 text-slate-900 font-black">${d.m + d.f}</td>
-                    <td class="p-6">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-bold ${d.status === 'Active' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'} uppercase">
-                            ${d.status}
-                        </span>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        let cart = 0;
-        function renderShop() {
-            const grid = document.getElementById('shop-grid');
-            grid.innerHTML = products.map(p => `
-                <div class="bg-white p-6 rounded-[32px] border border-slate-100 flex flex-col shadow-sm group hover:shadow-2xl hover:scale-[1.02] transition-all">
-                    <div class="aspect-[4/5] bg-slate-50 rounded-2xl mb-5 flex items-center justify-center relative overflow-hidden">
-                        <i class="fas fa-book-open text-slate-200 text-6xl group-hover:scale-110 transition-transform"></i>
-                        <span class="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-lg uppercase">${p.tag}</span>
-                    </div>
-                    <h5 class="font-black text-slate-800 line-clamp-1">${p.name}</h5>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-wider">${p.category}</p>
-                    <div class="mt-6 flex items-center justify-between">
-                        <p class="text-xl font-black text-red-600">฿${p.price}</p>
-                        <button onclick="addToCartAnimation(event)" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function addToCartAnimation(e) {
-            cart++;
-            document.getElementById('cart-count').innerText = cart;
-            const cartBtn = document.getElementById('cart-btn');
-            const fly = document.createElement('div');
-            fly.className = 'cart-fly';
-            fly.innerHTML = '<i class="fas fa-plus"></i>';
-            fly.style.left = e.clientX + 'px';
-            fly.style.top = e.clientY + 'px';
-            document.body.appendChild(fly);
-            
-            const target = cartBtn.getBoundingClientRect();
-            setTimeout(() => {
-                fly.style.left = (target.left + 10) + 'px';
-                fly.style.top = (target.top + 10) + 'px';
-                fly.style.opacity = '0';
-                fly.style.transform = 'scale(0.2)';
-            }, 50);
-            setTimeout(() => fly.remove(), 700);
-        }
-
-        // --- EXAM LOGIC ---
-        let qIdx = 0;
-        let score = 0;
-        let timer = null;
-        let timeLeft = 300;
-
-        function resetExamView() {
-            document.getElementById('exam-intro').classList.remove('hidden');
-            document.getElementById('exam-process').classList.add('hidden');
-            document.getElementById('exam-summary').classList.add('hidden');
-            clearInterval(timer);
-        }
-
-        function startExamAction() {
-            qIdx = 0; score = 0; timeLeft = 300;
-            document.getElementById('exam-intro').classList.add('hidden');
-            document.getElementById('exam-summary').classList.add('hidden');
-            document.getElementById('exam-process').classList.remove('hidden');
-            startTimer();
-            showQuestion();
-        }
-
-        function startTimer() {
-            clearInterval(timer);
-            const updateUI = () => {
-                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                const s = (timeLeft % 60).toString().padStart(2, '0');
-                const box = document.getElementById('timer-box');
-                box.innerText = `${m}:${s}`;
-                if(timeLeft < 60) box.classList.add('animate-pulse');
-                else box.classList.remove('animate-pulse');
-            };
-            updateUI();
-            timer = setInterval(() => {
-                timeLeft--;
-                updateUI();
-                if(timeLeft <= 0) finishExam();
-            }, 1000);
-        }
-
-        function showQuestion() {
-            const q = examPool[qIdx];
-            document.getElementById('current-subject-name').innerText = q.subject;
-            document.getElementById('q-index-display').innerText = qIdx + 1;
-            const container = document.getElementById('q-card');
-            container.innerHTML = `
-                <h4 class="text-2xl font-black text-slate-800 mb-8">${q.q}</h4>
-                <div class="grid gap-3">
-                    ${q.opts.map((opt, i) => `
-                        <button onclick="handleAnswer(${i})" class="w-full text-left p-6 border-2 border-slate-50 rounded-3xl font-bold hover:border-red-600 hover:bg-red-50 transition-all flex items-center group">
-                            <span class="w-10 h-10 rounded-xl bg-slate-50 border flex items-center justify-center mr-4 group-hover:bg-red-600 group-hover:text-white transition-colors">${i+1}</span>
-                            ${opt}
-                        </button>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function handleAnswer(i) {
-            if(i === examPool[qIdx].ans) score++;
-            qIdx++;
-            if(qIdx < examPool.length) showQuestion();
-            else finishExam();
-        }
-
-        function finishExam() {
-            clearInterval(timer);
-            document.getElementById('exam-process').classList.add('hidden');
-            document.getElementById('exam-summary').classList.remove('hidden');
-            document.getElementById('final-score').innerText = score;
-        }
-
-        // --- ADMIN NAV & PAGES ---
-        function navigateAdmin(pageId) {
-            document.querySelectorAll('.admin-page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`a-page-${pageId}`).classList.remove('hidden');
-            
-            document.querySelectorAll('aside nav button').forEach(b => b.classList.remove('active-admin-nav'));
-            document.getElementById(`a-nav-${pageId}`).classList.add('active-admin-nav');
-            
-            const titles = { 'dashboard': 'แผงควบคุมหลัก', 'slips': 'ตรวจสอบสลิปชำระเงิน', 'inventory': 'จัดการคลังสินค้า', 'banks': 'บัญชีธนาคาร', 'users': 'จัดการสมาชิก', 'jobs': 'ประกาศรับสมัครงาน', 'cms': 'ระบบแก้ไขเนื้อหา' };
-            document.getElementById('admin-page-title').innerText = titles[pageId];
-
-            if(pageId === 'inventory') renderAdminBooks();
-        }
-
-        function renderAdminBooks() {
-            const list = document.getElementById('admin-book-list');
-            list.innerHTML = products.map(p => `
-                <div class="bg-white p-6 rounded-3xl border flex items-center justify-between shadow-sm">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-14 bg-slate-50 rounded-xl border flex items-center justify-center text-slate-200">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div>
-                            <p class="font-black text-sm">${p.name}</p>
-                            <p class="text-[10px] text-red-600 font-bold uppercase">฿${p.price}</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="w-8 h-8 bg-slate-50 text-slate-400 rounded-lg hover:bg-slate-100"><i class="fas fa-edit"></i></button>
-                        <button class="w-8 h-8 bg-red-50 text-red-500 rounded-lg hover:bg-red-100"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- INIT ---
-        window.onload = () => {
-            navigateUser('home');
-        };
-    </script>
 </body>
 </html>
