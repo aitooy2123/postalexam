@@ -5,7 +5,6 @@ function switchView(view) {
     if(view === 'admin') navigateAdmin('dashboard');
 }
 
-// INIT
 window.onload = () => {
     navigateUser('home');
 };
