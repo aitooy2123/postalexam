@@ -1,4 +1,3 @@
-// USER NAV
 function navigateUser(pageId) {
     document.querySelectorAll('.user-page').forEach(p => p.classList.add('hidden'));
     document.getElementById(`u-page-${pageId}`).classList.remove('hidden');
@@ -6,11 +5,8 @@ function navigateUser(pageId) {
     if(pageId === 'stats') renderStats();
     if(pageId === 'shop') renderShop();
     if(pageId === 'exam') resetExamView();
-
-    window.scrollTo(0,0);
 }
 
-// STATS
 function renderStats() {
     const tbody = document.getElementById('stats-table-body');
     tbody.innerHTML = statsData.map(d => `
@@ -18,20 +14,19 @@ function renderStats() {
             <td>${d.year}</td>
             <td>${d.m}</td>
             <td>${d.f}</td>
-            <td>${d.m + d.f}</td>
+            <td>${d.m+d.f}</td>
             <td>${d.status}</td>
         </tr>
     `).join('');
 }
 
-// SHOP
 let cart = 0;
 
 function renderShop() {
     const grid = document.getElementById('shop-grid');
     grid.innerHTML = products.map(p => `
         <div>
-            <h5>${p.name}</h5>
+            ${p.name} - ${p.price}
             <button onclick="addToCart()">ซื้อ</button>
         </div>
     `).join('');
