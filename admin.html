@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Postal Exam</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body class="bg-slate-900 text-white flex">
+
+<!-- Sidebar -->
+<aside class="w-64 bg-black p-4">
+    <h2 class="font-bold mb-4">Admin</h2>
+
+    <button onclick="goAdmin('dashboard')">Dashboard</button><br>
+    <button onclick="goAdmin('products')">สินค้า</button>
+</aside>
+
+<!-- Content -->
+<main class="flex-1 p-10 bg-white text-black">
+
+    <section id="dashboard">
+        <h2 class="text-2xl font-bold">Dashboard</h2>
+    </section>
+
+    <section id="products" class="hidden">
+        <h2>สินค้า</h2>
+    </section>
+
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>
