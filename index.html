@@ -15,13 +15,88 @@
 
 <body class="bg-slate-50 text-slate-900">
 
-<!-- ✅ UI ทั้งหมดเหมือนเดิม -->
-<!-- 👇 คุณเอา HTML เดิมทั้งหมดวางตรงนี้ได้เลย (ไม่ต้องแก้แม้แต่บรรทัดเดียว) -->
+<!-- ================= GLOBAL BUTTON ================= -->
+<div class="fixed bottom-6 right-6 z-[100] flex gap-2">
+    <button onclick="switchView('user')" class="bg-slate-900 text-white px-5 py-3 rounded-full">หน้าบ้าน</button>
+    <button onclick="switchView('admin')" class="bg-red-600 text-white px-5 py-3 rounded-full">Admin</button>
+</div>
 
-<!-- 👉 ลบ <script> เดิมออก แล้วใช้ script แยกแทน -->
+<!-- ================= USER ================= -->
+<div id="user-system">
+
+<nav class="bg-white p-4 flex justify-between">
+    <div onclick="navigateUser('home')" class="cursor-pointer font-bold">PostalExam</div>
+    <div>
+        <button onclick="navigateUser('home')">หน้าแรก</button>
+        <button onclick="navigateUser('stats')">สถิติ</button>
+        <button onclick="navigateUser('exam')">สอบ</button>
+        <button onclick="navigateUser('shop')">ร้านค้า</button>
+    </div>
+    <div>
+        🛒 <span id="cart-count">0</span>
+    </div>
+</nav>
+
+<main>
+
+<section id="u-page-home" class="user-page p-10">
+    <h1 class="text-3xl font-bold">หน้าแรก</h1>
+</section>
+
+<section id="u-page-stats" class="user-page hidden p-10">
+    <table>
+        <tbody id="stats-table-body"></tbody>
+    </table>
+</section>
+
+<section id="u-page-exam" class="user-page hidden p-10">
+    <div id="exam-intro">
+        <button onclick="startExamAction()">เริ่มสอบ</button>
+    </div>
+
+    <div id="exam-process" class="hidden">
+        <div id="timer-box">05:00</div>
+        <div id="q-card"></div>
+    </div>
+
+    <div id="exam-summary" class="hidden">
+        <h2>คะแนน <span id="final-score"></span></h2>
+    </div>
+</section>
+
+<section id="u-page-shop" class="user-page hidden p-10">
+    <div id="shop-grid"></div>
+</section>
+
+</main>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div id="admin-system" class="hidden flex">
+
+<aside class="w-64 bg-black text-white p-4">
+    <button onclick="navigateAdmin('dashboard')" id="a-nav-dashboard">Dashboard</button>
+    <button onclick="navigateAdmin('inventory')" id="a-nav-inventory">สินค้า</button>
+</aside>
+
+<main class="flex-1 p-10">
+
+<section id="a-page-dashboard" class="admin-page">
+    <h2>Dashboard</h2>
+</section>
+
+<section id="a-page-inventory" class="admin-page hidden">
+    <div id="admin-book-list"></div>
+</section>
+
+</main>
+</div>
+
+<!-- ================= JS ================= -->
 <script src="js/data.js"></script>
 <script src="js/user.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/exam.js"></script>
 <script src="js/main.js"></script>
 
 </body>
