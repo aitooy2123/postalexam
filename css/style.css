@@ -1,7 +1,34 @@
 body {
     font-family: 'Sarabun', sans-serif;
+    overflow-x: hidden;
 }
 
-.hidden {
-    display: none;
+.custom-scroll::-webkit-scrollbar { width: 5px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+.active-admin-nav {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-left: 4px solid #dc2626;
+}
+
+.page-transition {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cart-fly {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    transition: all 0.7s cubic-bezier(0.175,0.885,0.32,1.275);
+    background: #dc2626;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
 }
